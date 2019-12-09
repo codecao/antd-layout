@@ -1,6 +1,6 @@
 import React from 'react'
 import { Route, Redirect } from 'react-router-dom'
-import { setLoginRedirectUrl } from '../actions/loginAction'
+import { setLoginRedirectUrl } from '@/redux/actions/loginAction'
 
 class AuthorizedRoute extends React.Component {
 	render() {
@@ -14,7 +14,7 @@ class AuthorizedRoute extends React.Component {
 					return isLogged
 							?  <Component {...props} />
 							: <Redirect to="/login" />
-				}} />
+				}} />				 
 		)
 	}
 }

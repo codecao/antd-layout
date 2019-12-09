@@ -11,7 +11,7 @@ import { entitiesReducer, queriesReducer } from 'redux-query'
 // import { createRouterMiddleware, initialRouterState } from 'connected-next-router'
 
 // reducers/redux-persist
-import loginReducer from './reducer/loginReducer'
+import loginReducer from './redux/reducer/loginReducer'
 import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 

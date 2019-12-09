@@ -3,6 +3,7 @@ import './Login.styl'
 import { login } from '../../mock.js'
 import { Form, Icon, Input, Button, Checkbox } from 'antd';
 import { withRouter } from 'react-router-dom';
+import { getToken, setToken, removeToken, setUserName, setPwd, removeUserInfo } from '@/utils/auth'
 import { connect } from 'react-redux'
 const FormItem = Form.Item;
 
@@ -15,48 +16,63 @@ class NormalLoginForm extends React.Component {
 		e.preventDefault();
 		this.props.form.validateFields((err, values) => {
 			if (!err) {
-				this.isLogging = true;
-				login(values).then(() => {
-					this.isLogging = false;
-					let toPath = this.props.toPath === '' ?  '/home' :  this.props.toPath
-					this.props.history.push(toPath);
-				})
+				
+				React.$axios
+					.post("/admin/auth/login", {
+						username: values.userName,
+						password: values.password
+					})
+					.then(res => {
+						const data = res.data
+						setToken(data.token)
+						setUserName(values.userName)
+						setPwd(values.password)
+						// commit('SET_TOKEN', data.token)
+						// commit('SET_USERINFO', data.user)
+
+						this.isLogging = true;
+						login(values).then(() => {
+							this.isLogging = false;
+							let toPath = this.props.toPath === '' ?  '/home' :  this.props.toPath
+							this.props.history.push(toPath);
+						})
+
+					});
+
 			}
 		});
 	}
 	render() {
 		const { getFieldDecorator } = this.props.form;
 		return (
-				<Form onSubmit={this.handleSubmit.bind(this)} className="login-form">
-					<FormItem>
-						{getFieldDecorator('userName', {
-							rules: [{ required: true, message: 'Please input your username!' }],
-						})(
-								<Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Username" />
-						)}
-					</FormItem>
-					<FormItem>
-						{getFieldDecorator('password', {
-							rules: [{ required: true, message: 'Please input your Password!' }],
-						})(
-								<Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="Password" />
-						)}
-					</FormItem>
-					<FormItem>
-						{getFieldDecorator('remember', {
-							valuePropName: 'checked',
-							initialValue: true,
-						})(
-								<Checkbox>Remember me</Checkbox>
-						)}
-						<a className="login-form-forgot" href="">Forgot password</a>
-						<Button type="primary" htmlType="submit" className="login-form-button"
-						        loading={this.isLogging ? true : false}>
-							{this.isLogging ? 'Loging' : 'Login'}
-						</Button>
-						Or <a href="">register now!</a>
-					</FormItem>
-				</Form>
+			<Form onSubmit={this.handleSubmit.bind(this)} className="login-form">
+				<FormItem>
+					{getFieldDecorator('userName', {
+						rules: [{ required: true, message: 'Please input your username!' }],
+					})(
+						<Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Username" />
+					)}
+				</FormItem>
+				<FormItem>
+					{getFieldDecorator('password', {
+						rules: [{ required: true, message: 'Please input your Password!' }],
+					})(
+						<Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="Password" />
+					)}
+				</FormItem>
+				<FormItem>
+					{/* {getFieldDecorator('remember', {
+						valuePropName: 'checked',
+						initialValue: true,
+					})(
+						<Checkbox>Remember me</Checkbox>
+					)} */}
+					<Button type="primary" htmlType="submit" className="login-form-button"
+						loading={this.isLogging ? true : false}>
+						{this.isLogging ? 'Loging' : '登录'}
+					</Button>
+				</FormItem>
+			</Form>
 		);
 	}
 }
@@ -68,5 +84,5 @@ const loginState = ({ loginState }) => ({
 })
 
 export default withRouter(connect(
-		loginState
+	loginState
 )(WrappedNormalLoginForm))

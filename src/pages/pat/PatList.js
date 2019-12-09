@@ -2,9 +2,7 @@ import React from 'react'
 
 
 const PatList = () => {
-	return pug`
-		div PatList
-	`
+	return  "123"
 }
 
 
