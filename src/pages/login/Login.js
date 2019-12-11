@@ -5,6 +5,7 @@ import { Form, Icon, Input, Button, Checkbox } from 'antd';
 import { withRouter } from 'react-router-dom';
 import { getToken, setToken, removeToken, setUserName, setPwd, removeUserInfo } from '@/utils/auth'
 import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux';
 const FormItem = Form.Item;
 
 class NormalLoginForm extends React.Component {
@@ -16,7 +17,7 @@ class NormalLoginForm extends React.Component {
 		e.preventDefault();
 		this.props.form.validateFields((err, values) => {
 			if (!err) {
-				
+
 				React.$axios
 					.post("/admin/auth/login", {
 						username: values.userName,
@@ -33,7 +34,7 @@ class NormalLoginForm extends React.Component {
 						this.isLogging = true;
 						login(values).then(() => {
 							this.isLogging = false;
-							let toPath = this.props.toPath === '' ?  '/home' :  this.props.toPath
+							let toPath = this.props.toPath === '' ? '/home' : this.props.toPath
 							this.props.history.push(toPath);
 						})
 
@@ -43,6 +44,7 @@ class NormalLoginForm extends React.Component {
 		});
 	}
 	render() {
+		const { increase, decrease} = this.props;
 		const { getFieldDecorator } = this.props.form;
 		return (
 			<Form onSubmit={this.handleSubmit.bind(this)} className="login-form">
@@ -71,6 +73,14 @@ class NormalLoginForm extends React.Component {
 						loading={this.isLogging ? true : false}>
 						{this.isLogging ? 'Loging' : '登录'}
 					</Button>
+
+					<Button  onClick={increase}   className="login-form-button">
+						add
+					</Button>
+					<Button   onClick={decrease}   className="login-form-button">
+						jian
+					</Button>
+					{this.props.count}
 				</FormItem>
 			</Form>
 		);
@@ -79,10 +89,19 @@ class NormalLoginForm extends React.Component {
 
 const WrappedNormalLoginForm = Form.create()(NormalLoginForm);
 
-const loginState = ({ loginState }) => ({
-	toPath: loginState.toPath
+const mapDispatchToProps = (dispatch, ownProps) => {
+	return {
+		increase: () => dispatch({ type: 'ADD' }),
+		decrease: () => dispatch({ type: 'JIAN' })
+	}
+}
+
+const mapStateToProps = ({ loginState }) => ({
+	toPath: loginState.toPath,
+	count: loginState.count
 })
 
 export default withRouter(connect(
-	loginState
+	mapStateToProps,
+	mapDispatchToProps
 )(WrappedNormalLoginForm))
