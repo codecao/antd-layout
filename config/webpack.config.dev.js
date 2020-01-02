@@ -4,6 +4,7 @@ const autoprefixer = require('autoprefixer');
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
@@ -70,45 +71,52 @@ module.exports = {
 					},
 					{
 						test: /\.(css|scss|styl)$/,
-						use: [
-							require.resolve('style-loader'),
-							{
-								loader: require.resolve('css-loader'),
+						use:ExtractTextPlugin.extract({
+							fallback: {
+								loader: require.resolve('style-loader'),
 								options: {
-									importLoaders: 1,
-									sourceMap:true
+									hmr: false,
 								},
 							},
-							{
-								loader: require.resolve('postcss-loader'),
-								options: {
-									ident: 'postcss',
-									plugins: () => [
-										require('postcss-flexbugs-fixes'),
-										autoprefixer({
-											browsers: [
-												'>1%',
-												'last 4 versions',
-												'Firefox ESR',
-												'not ie < 9', // React doesn't support IE8 anyway
-											],
-											flexbox: 'no-2009',
-										}),
-									],
+							use:[
+								{
+									loader: require.resolve('css-loader'),
+									options: {
+										importLoaders: 1,
+										sourceMap:true
+									},
 								},
-							},
-							{
-								loader: require.resolve('sass-loader'), // compiles Less to CSS
-								options: {
+								{
+									loader: require.resolve('postcss-loader'),
+									options: {
+										ident: 'postcss',
+										plugins: () => [
+											require('postcss-flexbugs-fixes'),
+											autoprefixer({
+												browsers: [
+													'>1%',
+													'last 4 versions',
+													'Firefox ESR',
+													'not ie < 9', // React doesn't support IE8 anyway
+												],
+												flexbox: 'no-2009',
+											}),
+										],
+									},
 								},
-							},
-							{
-								loader: require.resolve('stylus-loader'), // compiles stylus to CSS
-								options: {
-									sourceMap:true
+								{
+									loader: require.resolve('sass-loader'), // compiles Less to CSS
+									options: {
+									},
 								},
-							}
-						],
+								{
+									loader: require.resolve('stylus-loader'), // compiles stylus to CSS
+									options: {
+										sourceMap:true
+									},
+								}
+							]
+						})
 					},
 					{
 						exclude: [/\.(js|jsx|mjs)$/, /\.html$/, /\.json$/],
@@ -122,6 +130,7 @@ module.exports = {
 		],
 	},
 	plugins: [
+		new ExtractTextPlugin('style.css'),
 		new InterpolateHtmlPlugin(env.raw),
 		new HtmlWebpackPlugin({
 			inject: true,

@@ -74,13 +74,13 @@ class NormalLoginForm extends React.Component {
 						{this.isLogging ? 'Loging' : '登录'}
 					</Button>
 
-					<Button  onClick={increase}   className="login-form-button">
+					{/* <Button  onClick={increase}   className="login-form-button">
 						add
 					</Button>
 					<Button   onClick={decrease}   className="login-form-button">
 						jian
 					</Button>
-					{this.props.count}
+					{this.props.count} */}
 				</FormItem>
 			</Form>
 		);
